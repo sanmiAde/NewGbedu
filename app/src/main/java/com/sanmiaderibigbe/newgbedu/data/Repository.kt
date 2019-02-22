@@ -42,6 +42,7 @@ class Repository(private val application: Application) {
         return doa.loadAllSongs()
     }
 
+
     private fun performNetworkCall(call: Call<NewSongList>) {
         networkState.value = NetWorkState.Loading
 

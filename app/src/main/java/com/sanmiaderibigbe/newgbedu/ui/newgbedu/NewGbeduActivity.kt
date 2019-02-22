@@ -11,89 +11,57 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.View
-import android.widget.Toast
+
 import com.sanmiaderibigbe.newgbedu.R
-import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
-import com.sanmiaderibigbe.newgbedu.ui.adapter.SongListDecoration
-import com.sanmiaderibigbe.newgbedu.ui.adapter.SongsAdapter
+
 import kotlinx.android.synthetic.main.activity_main.*
+
+
+import android.support.v4.app.Fragment
+
+import android.support.v7.app.ActionBar
+
 
 class NewGbeduActivity : AppCompatActivity() {
 
-
-    private lateinit var viewModel: NewGbeduViewModel
-    private lateinit var adapter: SongsAdapter
     private val TAG: String = "mainSong"
+    private lateinit var toolbar: ActionBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProviders.of(this).get(NewGbeduViewModel::class.java)
         getPermission()
-        adapter = initRecyclerView()
-        getNewSongs()
+
         //Todo fix rotration problem
+        toolbar = supportActionBar!!
+        toolbar.title = "Latest  Gbedu"
+        loadFragment(NewGbeduFragment.newInstance(true))
 
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
 
-    private fun initRecyclerView(): SongsAdapter {
-        val adapter = SongsAdapter(this)
-        val recyclerView = findViewById<RecyclerView>(R.id.song_recyler_view)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false)
-        val largePadding = resources.getDimensionPixelSize(R.dimen.spacing_big)
-        val smallPadding = resources.getDimensionPixelSize(R.dimen.spacing_small)
-        recyclerView.addItemDecoration(SongListDecoration(largePadding, smallPadding))
-        return adapter
-    }
-
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-
+                //Todo optimise this process. Currently button opens a new fragment eventhough the fragment is currently open
+                toolbar.title = "Latest  Gbedu"
+                loadFragment(NewGbeduFragment.newInstance(true))
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-
+                toolbar.title = "Gbedu released today"
+                loadFragment(NewGbeduFragment.newInstance(false))
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_notifications -> {
 
-                return@OnNavigationItemSelectedListener true
-            }
         }
         false
     }
 
-    private fun getNewSongs() {
-        when {
-            isNetworkAvailable() -> {
-                observeNetworkState()
-                getNewSongsData()
-
-            }
-            else -> {
-                showProgressBar()
-                getSongsOffline(adapter)
-                hideProgressBar()
-            }
-        }
 
 
-    }
-
-    private fun getSongsOffline(adapter: SongsAdapter) {
-        viewModel.getCache().observe(this, Observer { it ->
-            adapter.setTodoList(it)
-        })
-    }
 
     private fun getPermission() =// Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(
@@ -142,59 +110,7 @@ class NewGbeduActivity : AppCompatActivity() {
 //    }
 
 
-    private fun observeNetworkState() {
-        viewModel.getNetworkstate().observe(this, Observer { network: NetWorkState? ->
 
-            when (network) {
-                is NetWorkState.NotLoaded -> {
-
-                    Toast.makeText(this, "Not loaded", Toast.LENGTH_SHORT).show()
-                }
-
-                is NetWorkState.Loading -> {
-                    Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
-                    showProgressBar()
-                }
-
-                is NetWorkState.Success -> {
-                    hideProgressBar()
-                    Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
-                }
-
-                is NetWorkState.Error -> {
-                    val netWorkError: NetWorkState.Error = network
-                    Toast.makeText(this, netWorkError.errorMessage, Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
-    }
-
-    //Turn this to bindingadapter logic.
-    private fun showProgressBar() {
-        progressBar.visibility = View.VISIBLE
-        song_recyler_view.visibility = View.INVISIBLE
-    }
-
-    private fun hideProgressBar() {
-        progressBar.visibility = View.INVISIBLE
-        song_recyler_view.visibility = View.VISIBLE
-    }
-
-
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
-    }
-
-    private fun getNewSongsData() {
-
-        viewModel.getNewSongsOnline().observe(this, Observer { it ->
-            Log.d("main", it.toString())
-            adapter.setTodoList(it)
-        })
-
-    }
 
 
 
@@ -215,11 +131,16 @@ class NewGbeduActivity : AppCompatActivity() {
         }// other 'case' statements for other permssions
     }
 
+    private fun loadFragment(fragment: Fragment) {
+        // load fragment
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragement_container, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
     companion object {
         private const val MY_PERMISSIONS_REQUEST_READ_MUSIC: Int = 2324
     }
-
-
-
 
 }
