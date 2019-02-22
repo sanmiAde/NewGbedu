@@ -7,6 +7,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -21,6 +22,8 @@ import com.sanmiaderibigbe.newgbedu.ui.adapter.SongListDecoration
 import com.sanmiaderibigbe.newgbedu.ui.adapter.SongsAdapter
 import kotlinx.android.synthetic.main.fragment_new_gbedu.*
 
+
+
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_SHOULD_LOAD_ALL_SONGS = "shouldLoadALlSongsInsteadoFSongsBeingReleasedToday"
@@ -32,15 +35,21 @@ private const val ARG_SHOULD_LOAD_ALL_SONGS = "shouldLoadALlSongsInsteadoFSongsB
  * create an instance of this fragment.
  *
  */
-class NewGbeduFragment : Fragment() {
+class NewGbeduFragment : Fragment()  {
+
+
+
+
     // TODO: Rename and change types of parameters
     private var shouldLoadAllSongs: Boolean? = null
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModel: NewGbeduViewModel
     private lateinit var adapter: SongsAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        retainInstance = true
         //Todo fix rotration problem
           arguments?.let {
             shouldLoadAllSongs = it.getBoolean(ARG_SHOULD_LOAD_ALL_SONGS)
@@ -48,6 +57,8 @@ class NewGbeduFragment : Fragment() {
         }
 
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +72,7 @@ class NewGbeduFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NewGbeduViewModel::class.java)
         adapter = initRecyclerView(view)
+        initSwipeToRefreshLayout(view)
         when(shouldLoadAllSongs){
             true -> {
                 getNewSongs()
@@ -71,6 +83,14 @@ class NewGbeduFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun initSwipeToRefreshLayout(view: View) {
+        swipeRefreshLayout = view.findViewById(R.id.swiperefresh)
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.getNewSongsOnline()
+            swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun getSongReleasedToday() {
