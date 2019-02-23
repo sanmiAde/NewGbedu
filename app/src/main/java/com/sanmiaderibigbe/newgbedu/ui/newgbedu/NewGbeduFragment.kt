@@ -4,6 +4,8 @@ package com.sanmiaderibigbe.newgbedu.ui.newgbedu
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,17 +13,16 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 
 import com.sanmiaderibigbe.newgbedu.R
 import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
 import com.sanmiaderibigbe.newgbedu.ui.adapter.SongListDecoration
 import com.sanmiaderibigbe.newgbedu.ui.adapter.SongsAdapter
+import com.sanmiaderibigbe.newgbedu.ui.setting.SettingPreferenceActivity
 import kotlinx.android.synthetic.main.fragment_new_gbedu.*
-
+import android.support.v7.preference.PreferenceManager
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,20 +37,37 @@ private const val ARG_SHOULD_LOAD_ALL_SONGS = "shouldLoadALlSongsInsteadoFSongsB
  *
  */
 class NewGbeduFragment : Fragment()  {
-
-
-
-
     // TODO: Rename and change types of parameters
     private var shouldLoadAllSongs: Boolean? = null
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModel: NewGbeduViewModel
     private lateinit var adapter: SongsAdapter
 
+    private lateinit var prefListener : SharedPreferences.OnSharedPreferenceChangeListener
+
+
+
+
+//    override fun onActivityCreated(savedInstanceState: Bundle?) {
+//        super.onActivityCreated(savedInstanceState)
+//        val  prefs =PreferenceManager.getDefaultSharedPreferences(context)
+//        prefListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+//            if (SettingPreferenceActivity.PREF_ACTIVATE_DAILY_NOTIFICATION == key){
+//                val shouldTurnOnNotification = sharedPreferences.getBoolean(getString(R.string.turn_on_daily_notification), true)
+//                when(shouldTurnOnNotification) {
+//                    true -> {
+//
+//                    }
+//                }
+//            }
+//        }
+//        prefs.registerOnSharedPreferenceChangeListener(prefListener)
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
+        setHasOptionsMenu(true)
+
         //Todo fix rotration problem
           arguments?.let {
             shouldLoadAllSongs = it.getBoolean(ARG_SHOULD_LOAD_ALL_SONGS)
@@ -82,6 +100,31 @@ class NewGbeduFragment : Fragment()  {
                 hideProgressBar()
             }
         }
+
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.new_gbedu_settings, menu)
+
+    }
+
+//    fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        activity?.menuInflater?.inflate(R.menu.new_gbedu_settings, menu)
+//        return true
+//    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.menu_settings -> {
+                startActivity(Intent(activity, SettingPreferenceActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+
 
     }
 
