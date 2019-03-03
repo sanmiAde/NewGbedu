@@ -22,7 +22,9 @@ import com.sanmiaderibigbe.newgbedu.ui.adapter.SongListDecoration
 import com.sanmiaderibigbe.newgbedu.ui.adapter.SongsAdapter
 import com.sanmiaderibigbe.newgbedu.ui.setting.SettingPreferenceActivity
 import kotlinx.android.synthetic.main.fragment_new_gbedu.*
-import android.support.v7.preference.PreferenceManager
+
+import com.sanmiaderibigbe.newgbedu.data.local.LocalSong
+import com.sanmiaderibigbe.newgbedu.ui.SongWebViewDetailScreenActivity
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,7 +38,19 @@ private const val ARG_SHOULD_LOAD_ALL_SONGS = "shouldLoadALlSongsInsteadoFSongsB
  * create an instance of this fragment.
  *
  */
-class NewGbeduFragment : Fragment()  {
+class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.OpenArtistWebView {
+
+
+    override fun onClickArtist(song: LocalSong) {
+        val intent = SongWebViewDetailScreenActivity.initSongWebViewDetailScreenActivity(context!!, songArtist =  song.artistName, songName = "", shouldShowSongWebView = false )
+        startActivity(intent)
+    }
+
+    override fun onClickSongTitle(song: LocalSong) {
+      val intent =  SongWebViewDetailScreenActivity.initSongWebViewDetailScreenActivity(context!!, song.songName, song.artistName, true )
+        startActivity(intent)
+    }
+
     // TODO: Rename and change types of parameters
     private var shouldLoadAllSongs: Boolean? = null
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -44,25 +58,6 @@ class NewGbeduFragment : Fragment()  {
     private lateinit var adapter: SongsAdapter
 
     private lateinit var prefListener : SharedPreferences.OnSharedPreferenceChangeListener
-
-
-
-
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        val  prefs =PreferenceManager.getDefaultSharedPreferences(context)
-//        prefListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-//            if (SettingPreferenceActivity.PREF_ACTIVATE_DAILY_NOTIFICATION == key){
-//                val shouldTurnOnNotification = sharedPreferences.getBoolean(getString(R.string.turn_on_daily_notification), true)
-//                when(shouldTurnOnNotification) {
-//                    true -> {
-//
-//                    }
-//                }
-//            }
-//        }
-//        prefs.registerOnSharedPreferenceChangeListener(prefListener)
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +70,6 @@ class NewGbeduFragment : Fragment()  {
         }
 
     }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -110,12 +103,6 @@ class NewGbeduFragment : Fragment()  {
 
     }
 
-//    fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        activity?.menuInflater?.inflate(R.menu.new_gbedu_settings, menu)
-//        return true
-//    }
-
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId) {
             R.id.menu_settings -> {
@@ -145,7 +132,7 @@ class NewGbeduFragment : Fragment()  {
     }
 
     private fun initRecyclerView(view: View): SongsAdapter {
-        val adapter = SongsAdapter(context!!)
+        val adapter = SongsAdapter(context!!, this, this)
         val recyclerView = view.findViewById<RecyclerView>(R.id.song_recyler_view)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)

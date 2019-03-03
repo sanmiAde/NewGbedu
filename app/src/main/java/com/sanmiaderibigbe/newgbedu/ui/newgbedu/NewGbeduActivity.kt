@@ -1,25 +1,17 @@
 package com.sanmiaderibigbe.newgbedu.ui.newgbedu
 
+
 import android.Manifest
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-
-import com.sanmiaderibigbe.newgbedu.R
-
-import kotlinx.android.synthetic.main.activity_main.*
-
-
 import android.support.v4.app.Fragment
-
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBar
+import android.support.v7.app.AppCompatActivity
+import com.sanmiaderibigbe.newgbedu.R
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class NewGbeduActivity : AppCompatActivity() {
@@ -59,8 +51,6 @@ class NewGbeduActivity : AppCompatActivity() {
         }
         false
     }
-
-
 
 
     private fun getPermission() =// Here, thisActivity is the current activity
@@ -108,10 +98,6 @@ class NewGbeduActivity : AppCompatActivity() {
 //            }
 //        })
 //    }
-
-
-
-
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
