@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
 
     <application
@@ -15,7 +17,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:hardwareAccelerated="true">
-        <activity android:name=".ui.SongWebViewDetailScreenActivity">
+        <activity android:name=".ui.SongWebViewDetailScreenActivity"
+                  android:parentActivityName=".ui.newgbedu.NewGbeduActivity">
         </activity>
         <activity
                 android:name=".ui.newgbedu.NewGbeduActivity"
@@ -26,7 +29,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.setting.SettingPreferenceActivity"/>
+        <activity android:name=".ui.setting.SettingPreferenceActivity"
+                  android:parentActivityName=".ui.newgbedu.NewGbeduActivity"/>
+
+        <service android:name=".service.NewMusicNotificationService"
+                 android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <receiver android:name=".service.NewMusicBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

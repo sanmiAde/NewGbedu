@@ -15,16 +15,15 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-
 import com.sanmiaderibigbe.newgbedu.R
+import com.sanmiaderibigbe.newgbedu.data.local.LocalSong
 import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
+import com.sanmiaderibigbe.newgbedu.service.NewMusicBroadcastReceiver
+import com.sanmiaderibigbe.newgbedu.ui.SongWebViewDetailScreenActivity
 import com.sanmiaderibigbe.newgbedu.ui.adapter.SongListDecoration
 import com.sanmiaderibigbe.newgbedu.ui.adapter.SongsAdapter
 import com.sanmiaderibigbe.newgbedu.ui.setting.SettingPreferenceActivity
 import kotlinx.android.synthetic.main.fragment_new_gbedu.*
-
-import com.sanmiaderibigbe.newgbedu.data.local.LocalSong
-import com.sanmiaderibigbe.newgbedu.ui.SongWebViewDetailScreenActivity
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -68,6 +67,8 @@ class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.
             shouldLoadAllSongs = it.getBoolean(ARG_SHOULD_LOAD_ALL_SONGS)
 
         }
+
+        NewMusicBroadcastReceiver.scheduleAlarms(context!!)
 
     }
 

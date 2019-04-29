@@ -6,10 +6,10 @@ import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.sanmiaderibigbe.newgbedu.data.local.LocalSong
 import com.sanmiaderibigbe.newgbedu.data.local.LocalSongDao
+import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
 import com.sanmiaderibigbe.newgbedu.data.remote.NewSongList
 import com.sanmiaderibigbe.newgbedu.data.remote.RetrofitInstance
 import com.sanmiaderibigbe.newgbedu.data.remote.Song
-import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
 import org.jetbrains.anko.doAsync
 import retrofit2.Call
 import retrofit2.Callback
@@ -97,10 +97,6 @@ class Repository(private val application: Application) {
 
     fun getNetworkState(): LiveData<NetWorkState> {
         return networkState
-    }
-
-    fun getCache() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 
