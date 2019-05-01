@@ -10,43 +10,46 @@ import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
 import com.sanmiaderibigbe.newgbedu.data.remote.NewSongList
 import com.sanmiaderibigbe.newgbedu.data.remote.RetrofitInstance
 import com.sanmiaderibigbe.newgbedu.data.remote.Song
+import com.sanmiaderibigbe.newgbedu.utils.convertDateStringToDateObject
+import com.sanmiaderibigbe.newgbedu.utils.convertDateToString
 import org.jetbrains.anko.doAsync
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.util.*
 
 class Repository(private val application: Application) {
 
     private val networkState: MutableLiveData<NetWorkState> = MutableLiveData()
-    private val doa : LocalSongDao
+    private val doa: LocalSongDao
 
     init {
-        val db = AppDatabase.getDatabase(application,false)
+        val db = AppDatabase.getDatabase(application, false)
         doa = db.localSongDao()
     }
 
-    fun initApiCall(): LiveData<List<LocalSong>>{
+    fun initApiCall(): LiveData<List<LocalSong>> {
         networkState.value = NetWorkState.NotLoaded
-        
+
         val service = RetrofitInstance.initRetrofitInstance()
         val call: Call<NewSongList> = service.getNewSongs()
-        
+
         performNetworkCall(call)
-        
+
         return getLocalCache()
     }
 
-     fun getLocalCache(): LiveData<List<LocalSong>> {
+    fun getLocalCache(): LiveData<List<LocalSong>> {
         return doa.loadAllSongs()
     }
+
+    fun getSongsReleasedToday(): List<LocalSong> = doa.loadSongReleasedOnCurrentDate(convertDateToString(Date()))
 
 
     private fun performNetworkCall(call: Call<NewSongList>) {
         networkState.value = NetWorkState.Loading
 
-        call.enqueue(object  : Callback<NewSongList> {
+        call.enqueue(object : Callback<NewSongList> {
             override fun onFailure(call: Call<NewSongList>, t: Throwable) {
                 Log.e(TAG, t.message)
                 networkState.value = NetWorkState.Error(t.message)
@@ -87,11 +90,6 @@ class Repository(private val application: Application) {
         Log.d(TAG, localSongDtos.size.toString())
         return localSongDtos
 
-    }
-
-    private fun convertDateStringToDateObject(dateString: String): Date {
-        val format = SimpleDateFormat("d MMMM yyyy")
-        return format.parse(dateString)
     }
 
 

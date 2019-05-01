@@ -28,26 +28,29 @@ class NewMusicNotification(private val application: Application) {
                 notificationChannel.enableLights(true)
                 notificationChannel.lightColor = Color.RED
                 notificationChannel.enableVibration(true)
-                notificationChannel.description = "Daily Music Notification from new gdebu"
+                notificationChannel.description = "Daily Music Notification from New Gbedu"
                 notificationManager.createNotificationChannel(notificationChannel)
             }
         }
 
     }
 
-    private fun getNotificationBuilder(): NotificationCompat.Builder {
+    private fun getNotificationBuilder(numberOfArtistsReleasedToday : Int): NotificationCompat.Builder {
         createNotificationChannel()
 
         return NotificationCompat.Builder(application, NEW_SONG_NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Ye!! New Ggedu has been released")
-            .setContentText("This is your notification text.")
+            .setContentTitle(application.getString(R.string.new_gbedu))
+            .setContentText("$numberOfArtistsReleasedToday are being released today.")
             .setContentIntent(getNewMusicPendingIntent())
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setAutoCancel(true)
     }
 
-    fun createNotification() {
-        val notifyBuilder = getNotificationBuilder()
+    /**
+     * @param numberOfArtistsReleasedToday THe number of artists being released today.
+     */
+    fun createNotification(numberOfArtistsReleasedToday : Int) {
+        val notifyBuilder = getNotificationBuilder(numberOfArtistsReleasedToday)
         notificationManager.notify(NEW_MUSIC_NOTIFICATION_ID, notifyBuilder.build())
     }
 
@@ -62,6 +65,6 @@ class NewMusicNotification(private val application: Application) {
 
     companion object {
         private const val NEW_SONG_NOTIFICATION_CHANNEL_ID = "new_song_notification_channel"
-        private const val NEW_MUSIC_NOTIFICATION_ID = 123
+        private const val NEW_MUSIC_NOTIFICATION_ID = 12378
     }
 }

@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:title="@string/daily_notification" android:key="@string/turn_on_daily_notification"
             android:layout_height="match_parent" android:layout_width="match_parent"/>
 </PreferenceScreen>

@@ -9,13 +9,16 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import com.sanmiaderibigbe.newgbedu.R
+import com.sanmiaderibigbe.newgbedu.data.Repository
 import com.sanmiaderibigbe.newgbedu.data.local.LocalSong
 import com.sanmiaderibigbe.newgbedu.data.remote.NetWorkState
 import com.sanmiaderibigbe.newgbedu.service.NewMusicBroadcastReceiver
@@ -37,7 +40,24 @@ private const val ARG_SHOULD_LOAD_ALL_SONGS = "shouldLoadALlSongsInsteadoFSongsB
  * create an instance of this fragment.
  *
  */
-class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.OpenArtistWebView {
+class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.OpenArtistWebView,  SharedPreferences.OnSharedPreferenceChangeListener {
+
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, p1: String?) {
+
+        when(sharedPreferences?.getBoolean(getString(R.string.turn_on_daily_notification), false)){
+            true -> {
+                NewMusicBroadcastReceiver.scheduleNewMusicNotificationAlarm(context!! )
+                Toast.makeText(activity, "New Music notification turned on.", Toast.LENGTH_SHORT).show()
+                //TODO alamr fires immediately when notification is enabled after 9 o clock.
+            }
+
+            false -> {
+                NewMusicBroadcastReceiver.cancelNewMusicNotificationAlarm(context!!)
+                Toast.makeText(activity, "New Music notification turned off.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 
     override fun onClickArtist(song: LocalSong) {
@@ -57,6 +77,7 @@ class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.
     private lateinit var adapter: SongsAdapter
 
     private lateinit var prefListener : SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var pref : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +89,8 @@ class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.
 
         }
 
-        NewMusicBroadcastReceiver.scheduleAlarms(context!!)
+        pref = PreferenceManager.getDefaultSharedPreferences(activity)
+        pref.registerOnSharedPreferenceChangeListener(this)
 
     }
 
@@ -97,6 +119,10 @@ class NewGbeduFragment : Fragment(), SongsAdapter.OpenSongWebView, SongsAdapter.
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        pref.unregisterOnSharedPreferenceChangeListener(this)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)

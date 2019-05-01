@@ -17,5 +17,7 @@ interface LocalSongDao {
     fun loadAllSongs(): LiveData<List<LocalSong>>
 
     //Todo add delete methode. To delete old song. where song older than certain time.
+    @Query("SELECT * FROM song_list_table WHERE releaseDate = :currentDate ORDER BY songName  ")
+    fun loadSongReleasedOnCurrentDate(currentDate: String)  : List<LocalSong>
 
 }
